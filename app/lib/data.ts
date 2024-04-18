@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { InvoiceForm, User } from './definitions';
 import { formatCurrency } from './utils';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ log: ['query'] });
 
 export const dynamic = 'force-dynamic';
 
@@ -124,12 +124,20 @@ export async function fetchFilteredInvoices(
       },
       where: {
         customer: {
-          name: {
-            contains: query,
-          },
-          email: {
-            contains: query,
-          },
+          OR: [
+            {
+              name: {
+                contains: `%${query}%`,
+                mode: 'insensitive',
+              },
+            },
+            {
+              email: {
+                contains: `%${query}%`,
+                mode: 'insensitive',
+              },
+            },
+          ],
         },
       },
       orderBy: {
@@ -146,18 +154,25 @@ export async function fetchFilteredInvoices(
 
 export async function fetchInvoicesPages(query: string) {
   try {
+    console.log(query);
     const invoices = await prisma.invoices.findMany({
       select: {
         id: true,
       },
       where: {
         customer: {
-          name: {
-            contains: query,
-          },
-          email: {
-            contains: query,
-          },
+          OR: [
+            {
+              name: {
+                contains: `%${query}%`,
+                mode: 'insensitive',
+              },
+              email: {
+                contains: `%${query}%`,
+                mode: 'insensitive',
+              },
+            },
+          ],
         },
       },
     });
@@ -231,12 +246,20 @@ export async function fetchFilteredCustomers(query: string) {
         },
       },
       where: {
-        name: {
-          contains: query,
-        },
-        email: {
-          contains: query,
-        },
+        OR: [
+          {
+            name: {
+              contains: `%${query}%`,
+              mode: 'insensitive',
+            },
+          },
+          {
+            email: {
+              contains: `%${query}%`,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
       orderBy: {
         name: 'asc',
