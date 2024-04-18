@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { InvoiceForm, User } from './definitions';
 import { formatCurrency } from './utils';
 
-const prisma = new PrismaClient({ log: ['query'] });
+const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
